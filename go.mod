@@ -1,4 +1,4 @@
-module github.com/macheal/go-plugins/store/etcd
+module github.com/macheal/go-micro-plugins
 
 go 1.13
 
@@ -7,6 +7,7 @@ require (
 	github.com/kr/pretty v0.1.0
 	github.com/micro/go-micro/v2 v2.9.1
 	github.com/pkg/errors v0.9.1
+	go.uber.org/zap v1.13.0
 	google.golang.org/grpc v1.26.0
 
 )
