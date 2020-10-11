@@ -9,6 +9,7 @@ import (
 
 type Options struct {
 	logger.Options
+	writeSyncer zapcore.WriteSyncer
 }
 
 type callerSkipKey struct{}

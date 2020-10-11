@@ -3,6 +3,7 @@ package zap
 import (
 	"context"
 	"fmt"
+	"github.com/natefinch/lumberjack"
 	"os"
 	"sync"
 
@@ -53,6 +54,23 @@ func (l *zaplog) Init(opts ...logger.Option) error {
 		return err
 	}
 
+	{
+		fileName := "micro-srv.log"
+		syncWriter := zapcore.AddSync(&lumberjack.Logger{
+			Filename:  fileName,
+			MaxSize:   1, //128, //MB
+			MaxAge:    7,
+			LocalTime: true,
+			Compress:  true,
+		})
+		core := zapcore.NewCore(zapcore.NewJSONEncoder(zapConfig.EncoderConfig), syncWriter, zap.NewAtomicLevelAt(zap.DebugLevel))
+
+		nop := zap.WrapCore(func(c zapcore.Core) zapcore.Core {
+			c = zapcore.NewTee(c, core)
+			return c
+		})
+		log = log.WithOptions(nop)
+	}
 	// Adding seed fields if exist
 	if l.opts.Fields != nil {
 		data := []zap.Field{}
