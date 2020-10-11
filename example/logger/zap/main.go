@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/macheal/go-micro-plugins/logger/zap"
 	"github.com/micro/go-micro/v2/logger"
+	"github.com/natefinch/lumberjack"
 	uzap "go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"time"
@@ -12,7 +14,9 @@ func main() {
 
 	NewLogger()
 	for {
-		logger.Info(logger.InfoLevel, "info")
+		logger.Info("info")
+		logger.Debug("debug")
+		logger.Error("error")
 		time.Sleep(10 * time.Millisecond)
 	}
 
@@ -26,15 +30,29 @@ func NewLogger() {
 
 	conf := uzap.NewProductionConfig()
 	conf.EncoderConfig = encoderConfig
+	///dev/stderr
+	conf.OutputPaths = []string{"stderr", "a.log"}
+	fileName := "micro-srv.log"
+	outer := lumberjack.Logger{
+		Filename:  fileName,
+		MaxSize:   1, //128, //MB
+		MaxAge:    7,
+		LocalTime: true,
+		Compress:  true,
+	}
+	fmt.Println(outer)
 
 	//转换日志等级
-	loggerLevel, err := logger.GetLevel("debug")
+	loggerLevel, err := logger.GetLevel("warn")
 	if err != nil {
 		loggerLevel = logger.WarnLevel
 	}
+	//loggerLevel = logger.WarnLevel
 	l, err := zap.NewLogger(
 		zap.WithConfig(conf),
 		logger.WithLevel(loggerLevel),
+		zap.WithOutput(&outer),
+		zap.WithMultiOutput(true),
 	)
 	if err != nil {
 		panic(err)
