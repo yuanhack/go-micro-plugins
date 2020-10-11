@@ -45,8 +45,8 @@ func WithOutput(i io.Writer) logger.Option {
 	return logger.SetOption(outwriter{}, i)
 }
 
-type multiOutput struct{}
+type singleOutput struct{}
 
-func WithMultiOutput(i bool) logger.Option {
-	return logger.SetOption(multiOutput{}, i)
+func WithSingleOutputOutput(i bool) logger.Option {
+	return logger.SetOption(singleOutput{}, i)
 }

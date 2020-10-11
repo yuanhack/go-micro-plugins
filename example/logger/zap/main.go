@@ -14,9 +14,9 @@ func main() {
 
 	NewLogger()
 	for {
-		logger.Info("info")
-		logger.Debug("debug")
-		logger.Error("error")
+		logger.Log(logger.InfoLevel, "info")
+		logger.Log(logger.DebugLevel, "debug")
+		logger.Log(logger.ErrorLevel, "error")
 		time.Sleep(10 * time.Millisecond)
 	}
 
@@ -52,7 +52,7 @@ func NewLogger() {
 		zap.WithConfig(conf),
 		logger.WithLevel(loggerLevel),
 		zap.WithOutput(&outer),
-		zap.WithMultiOutput(true),
+		zap.WithSingleOutputOutput(true),
 	)
 	if err != nil {
 		panic(err)

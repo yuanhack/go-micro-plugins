@@ -62,13 +62,14 @@ func (l *zaplog) Init(opts ...logger.Option) error {
 			syncWriter := zapcore.AddSync(out)
 			core := zapcore.NewCore(zapcore.NewJSONEncoder(zapConfig.EncoderConfig), syncWriter, zap.NewAtomicLevelAt(loggerToZapLevel(l.opts.Level)))
 			nop := zap.WrapCore(func(c zapcore.Core) zapcore.Core {
-				if b, ok := l.opts.Context.Value(multiOutput{}).(bool); ok {
+				if b, ok := l.opts.Context.Value(singleOutput{}).(bool); ok {
 					if b {
-						c = zapcore.NewTee(c, core)
-						return c
+						return core
 					}
 				}
-				return core
+				c = zapcore.NewTee(c, core)
+				return c
+
 			})
 			log = log.WithOptions(nop)
 		}
