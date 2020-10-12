@@ -47,6 +47,6 @@ func WithOutput(i io.Writer) logger.Option {
 
 type singleOutput struct{}
 
-func WithSingleOutputOutput(i bool) logger.Option {
+func WithSingleOutput(i bool) logger.Option {
 	return logger.SetOption(singleOutput{}, i)
 }

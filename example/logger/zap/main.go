@@ -52,7 +52,7 @@ func NewLogger() {
 		zap.WithConfig(conf),
 		logger.WithLevel(loggerLevel),
 		zap.WithOutput(&outer),
-		zap.WithSingleOutputOutput(true),
+		zap.WithSingleOutput(true),
 	)
 	if err != nil {
 		panic(err)
