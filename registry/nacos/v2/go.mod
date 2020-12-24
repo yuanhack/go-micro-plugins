@@ -1,4 +1,6 @@
-module github.com/micro/go-plugins/registry/nacos/v2
+module registry/nacos/v2
+
+//module github.com/micro/go-plugins/registry/nacos/v2
 
 go 1.13
 
