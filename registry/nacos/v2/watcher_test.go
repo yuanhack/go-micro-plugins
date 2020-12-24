@@ -6,10 +6,10 @@ import (
 
 	"github.com/nacos-group/nacos-sdk-go/vo"
 
+	nacosMock "github.com/macheal/go-micro-plugins/registry/nacos/v2/mock"
 	"github.com/micro/go-micro/v2/registry"
 	"github.com/nacos-group/nacos-sdk-go/model"
 	"github.com/stretchr/testify/mock"
-	nacosMock "registry/nacos/v2/mock"
 
 	"github.com/stretchr/testify/assert"
 )
