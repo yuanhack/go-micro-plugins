@@ -1,4 +1,4 @@
-module registry/nacos/v2
+module github.com/macheal/go-micro-plugins/registry/nacos/v2
 
 //module github.com/micro/go-plugins/registry/nacos/v2
 
