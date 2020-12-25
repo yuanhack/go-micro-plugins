@@ -170,23 +170,36 @@ func DefaultRegisterInstanceParam() vo.RegisterInstanceParam {
 	param.Ephemeral = true
 	return param
 }
+func DefaultGetServiceParam() vo.GetServiceParam {
+
+	param := vo.GetServiceParam{}
+	return param
+}
 
 func (c *nacosRegistry) GetService(name string, opts ...registry.GetOption) ([]*registry.Service, error) {
 	var options registry.GetOptions
 	for _, o := range opts {
 		o(&options)
 	}
-	withContext := false
+	//withContext := false
 	param := vo.GetServiceParam{}
 	if options.Context != nil {
 		if p, ok := options.Context.Value("select_instances_param").(vo.GetServiceParam); ok {
 			param = p
-			withContext = ok
+			//withContext = ok
 		}
 	}
-	if !withContext {
-		param.ServiceName = name
+	if c.opts.Context != nil {
+		if p, ok := c.opts.Context.Value("select_instances_param").(vo.GetServiceParam); ok {
+			param = p
+			//withContext = ok
+		}
+
 	}
+	param.ServiceName = name
+	//if !withContext {
+	//	param.ServiceName = name
+	//}
 	service, err := c.namingClient.GetService(param)
 	if err != nil {
 		return nil, err
