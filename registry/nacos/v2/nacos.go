@@ -3,6 +3,7 @@ package nacos
 import (
 	"context"
 	"errors"
+	"github.com/micro/cli/v2"
 	"net"
 	"strconv"
 	"time"
@@ -19,6 +20,8 @@ import (
 	"github.com/micro/go-micro/v2/registry"
 )
 
+var _groupName string
+
 type nacosRegistry struct {
 	namingClient naming_client.INamingClient
 	opts         registry.Options
@@ -26,6 +29,19 @@ type nacosRegistry struct {
 
 func init() {
 	cmd.DefaultRegistries["nacos"] = NewRegistry
+	app := cmd.App()
+	flags := []cli.Flag{
+		&cli.StringFlag{
+			Name:        "group_name",
+			Aliases:     nil,
+			Usage:       "This is nacos group name",
+			EnvVars:     []string{"RTSS_TEST"},
+			Value:       "DEFAULT_GROUP",
+			DefaultText: "DEFAULT_GROUP",
+			Destination: &_groupName,
+		},
+	}
+	app.Flags = append(app.Flags, flags...)
 }
 
 func getNodeIpPort(s *registry.Service) (host string, port int, err error) {
@@ -168,6 +184,7 @@ func DefaultRegisterInstanceParam() vo.RegisterInstanceParam {
 	param.Healthy = true
 	param.Weight = 1.0
 	param.Ephemeral = true
+	param.GroupName = _groupName
 	return param
 }
 func DefaultGetServiceParam() vo.GetServiceParam {
