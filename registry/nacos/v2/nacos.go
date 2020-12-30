@@ -123,6 +123,7 @@ func (c *nacosRegistry) Deregister(s *registry.Service, opts ...registry.Deregis
 	}
 	withContext := false
 	param := vo.DeregisterInstanceParam{}
+	param.GroupName = _groupName
 	if options.Context != nil {
 		if p, ok := options.Context.Value("deregister_instance_param").(vo.DeregisterInstanceParam); ok {
 			param = p
@@ -151,6 +152,7 @@ func (c *nacosRegistry) Register(s *registry.Service, opts ...registry.RegisterO
 	//withContext := false
 	//param := vo.RegisterInstanceParam{}
 	param := DefaultRegisterInstanceParam()
+	param.GroupName = _groupName
 	if options.Context != nil {
 		if p, ok := options.Context.Value("register_instance_param").(vo.RegisterInstanceParam); ok {
 			param = p
@@ -173,6 +175,7 @@ func (c *nacosRegistry) Register(s *registry.Service, opts ...registry.RegisterO
 	param.Port = uint64(port)
 	param.Metadata = s.Nodes[0].Metadata
 	param.ServiceName = s.Name
+
 	//}
 	_, err = c.namingClient.RegisterInstance(param)
 	return err
@@ -200,6 +203,7 @@ func (c *nacosRegistry) GetService(name string, opts ...registry.GetOption) ([]*
 	}
 	//withContext := false
 	param := vo.GetServiceParam{}
+	param.GroupName = _groupName
 	if options.Context != nil {
 		if p, ok := options.Context.Value("select_instances_param").(vo.GetServiceParam); ok {
 			param = p
@@ -248,6 +252,7 @@ func (c *nacosRegistry) ListServices(opts ...registry.ListOption) ([]*registry.S
 	}
 	withContext := false
 	param := vo.GetAllServiceInfoParam{}
+	param.GroupName = _groupName
 	if options.Context != nil {
 		if p, ok := options.Context.Value("get_all_service_info_param").(vo.GetAllServiceInfoParam); ok {
 			param = p
