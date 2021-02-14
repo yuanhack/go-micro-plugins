@@ -11,7 +11,8 @@ require (
 	github.com/nacos-group/nacos-sdk-go v1.0.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/testify v1.5.1
+	github.com/stretchr/testify v1.6.1
+	go.mongodb.org/mongo-driver v1.4.6
 	go.uber.org/zap v1.15.0
 	google.golang.org/grpc v1.26.0
 )
