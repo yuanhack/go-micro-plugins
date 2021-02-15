@@ -31,9 +31,10 @@ func TestMongo(t *testing.T) {
 	}
 	err = db.Write(&data)
 	assert.NoError(t, err)
-	res, err := db.Read(testKey, store.ReadPrefix())
+	res, err := db.Read(testKey)
+	fmt.Printf("len:%d,res[0]: %+v\r\n", len(res), res[0])
+	res, err = db.Read(testKey, store.ReadPrefix())
 	assert.NoError(t, err)
-	fmt.Printf("res[0]: %+v\r\n", res[0])
 	for i, re := range res {
 		fmt.Println(i, re)
 	}

@@ -240,7 +240,12 @@ func (s *MongoDBStore) configure() error {
 			return errors.New("store.namespace must only contain letters")
 		}
 	}
-
+	if len(s.options.Database) > 0 {
+		s.database = s.options.Database
+	}
+	if len(s.options.Table) > 0 {
+		s.table = s.options.Table
+	}
 	source := s.options.Nodes[0]
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -268,15 +273,15 @@ func (s *MongoDBStore) String() string {
 
 // New returns a new micro Store backed by sql
 func NewStore(opts ...store.Option) store.Store {
-	var options store.Options
+	var opt store.Options
 	for _, o := range opts {
-		o(&options)
+		o(&opt)
 	}
 
 	// new store
 	s := new(MongoDBStore)
 	// set the options
-	s.options = options
+	s.options = opt
 	s.listProjection = bson.D{
 		{"key", 1},
 		{"_id", 0},
