@@ -67,12 +67,21 @@ func (s *MongoDBStore) List(opts ...store.ListOption) ([]string, error) {
 	var records []string
 
 	filter := bson.M{}
-	if len(opt.Prefix) > 0 {
+	if len(opt.Prefix) > 0 && len(opt.Suffix) > 0 {
+		filter["key"] = primitive.Regex{Pattern: "^" + opt.Prefix + ".*" + opt.Suffix + "$"}
+	} else if len(opt.Prefix) > 0 {
 		filter["key"] = primitive.Regex{Pattern: "^" + opt.Prefix}
-	}
-	if len(opt.Suffix) > 0 {
+	} else if len(opt.Suffix) > 0 {
 		filter["key"] = primitive.Regex{Pattern: opt.Suffix + "$"}
 	}
+
+	//if len(opt.Prefix) > 0 {
+	//	filter["key"] = primitive.Regex{Pattern: "^" + opt.Prefix}
+	//}
+	//if len(opt.Suffix) > 0 {
+	//	filter["key"] = primitive.Regex{Pattern: opt.Suffix + "$"}
+	//}
+
 	cursor, err := s.collection.Find(
 		context.Background(),
 		filter,
