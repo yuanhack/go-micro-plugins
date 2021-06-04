@@ -3,13 +3,14 @@ package mongo
 import (
 	"context"
 	"database/sql"
+	"strings"
+	"time"
+	"unicode"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"strings"
-	"time"
-	"unicode"
 
 	log "github.com/micro/go-micro/v2/logger"
 	"github.com/micro/go-micro/v2/store"
@@ -192,6 +193,8 @@ func (s *MongoDBStore) Write(r *store.Record, opts ...store.WriteOption) error {
 			}
 		}
 	}
+	//ss := s.collection.FindOneAndUpdate(context.Background(), bson.M{"key": r.Key}, data)
+	//fmt.Printf("%+v", ss)
 	return nil
 }
 
