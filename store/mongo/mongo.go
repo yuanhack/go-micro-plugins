@@ -3,13 +3,14 @@ package mongo
 import (
 	"context"
 	"database/sql"
+	"strings"
+	"time"
+	"unicode"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"strings"
-	"time"
-	"unicode"
 
 	log "github.com/macheal/go-micro/v2/logger"
 	"github.com/macheal/go-micro/v2/store"
@@ -67,12 +68,21 @@ func (s *MongoDBStore) List(opts ...store.ListOption) ([]string, error) {
 	var records []string
 
 	filter := bson.M{}
-	if len(opt.Prefix) > 0 {
+	if len(opt.Prefix) > 0 && len(opt.Suffix) > 0 {
+		filter["key"] = primitive.Regex{Pattern: "^" + opt.Prefix + ".*" + opt.Suffix + "$"}
+	} else if len(opt.Prefix) > 0 {
 		filter["key"] = primitive.Regex{Pattern: "^" + opt.Prefix}
-	}
-	if len(opt.Suffix) > 0 {
+	} else if len(opt.Suffix) > 0 {
 		filter["key"] = primitive.Regex{Pattern: opt.Suffix + "$"}
 	}
+
+	//if len(opt.Prefix) > 0 {
+	//	filter["key"] = primitive.Regex{Pattern: "^" + opt.Prefix}
+	//}
+	//if len(opt.Suffix) > 0 {
+	//	filter["key"] = primitive.Regex{Pattern: opt.Suffix + "$"}
+	//}
+
 	cursor, err := s.collection.Find(
 		context.Background(),
 		filter,
@@ -183,6 +193,8 @@ func (s *MongoDBStore) Write(r *store.Record, opts ...store.WriteOption) error {
 			}
 		}
 	}
+	//ss := s.collection.FindOneAndUpdate(context.Background(), bson.M{"key": r.Key}, data)
+	//fmt.Printf("%+v", ss)
 	return nil
 }
 

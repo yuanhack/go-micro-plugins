@@ -45,3 +45,40 @@ func TestMongo(t *testing.T) {
 	list, err = db.List(store.ListSuffix("test"))
 	fmt.Println("listSuffix test:", err, list)
 }
+
+func TestMongoList(t *testing.T) {
+	url := "mongodb://root:example@172.16.0.210:30007/setting?authSource=admin"
+	db := NewStore(URI(url), store.Database("micro"), store.Table("store"))
+
+	db.Write(&store.Record{
+		Key:   "aabbccdd",
+		Value: []byte("this is a test"),
+	})
+
+	ss, err := db.List()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println("---all---")
+	for _, v := range ss {
+		fmt.Println(v)
+	}
+
+	ss, err = db.List(store.ListPrefix("aa"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println("---prefix aa---")
+	for _, v := range ss {
+		fmt.Println(v)
+	}
+
+	ss, err = db.List(store.ListPrefix("aa"), store.ListSuffix("dd"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println("---prefix aa, suffix dd---")
+	for _, v := range ss {
+		fmt.Println(v)
+	}
+}
