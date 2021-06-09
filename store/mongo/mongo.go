@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 	"unicode"
@@ -113,6 +114,11 @@ func (s *MongoDBStore) Read(key string, opts ...store.ReadOption) ([]*store.Reco
 	var records []*store.Record
 	filter := bson.M{}
 
+	midSub := ""
+	if v := s.options.Context.Value(mid_sub("")); v != nil {
+		midSub = v.(string)
+	}
+	fmt.Println(midSub)
 	if opt.Prefix {
 		filter["key"] = primitive.Regex{Pattern: "^" + key}
 	} else if opt.Suffix {
