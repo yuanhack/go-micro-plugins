@@ -15,7 +15,7 @@ import (
 
 	"github.com/nacos-group/nacos-sdk-go/clients/naming_client"
 
-	"github.com/micro/go-micro/v2/registry"
+	"github.com/macheal/go-micro/v2/registry"
 )
 
 func getRegistry(nacosClientMock naming_client.INamingClient) registry.Registry {
