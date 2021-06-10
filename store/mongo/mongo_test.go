@@ -3,7 +3,7 @@ package mongo
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/micro/go-micro/v2/store"
+	"github.com/macheal/go-micro/v2/store"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

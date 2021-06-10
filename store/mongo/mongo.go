@@ -12,8 +12,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	log "github.com/micro/go-micro/v2/logger"
-	"github.com/micro/go-micro/v2/store"
+	log "github.com/macheal/go-micro/v2/logger"
+	"github.com/macheal/go-micro/v2/store"
 	"github.com/pkg/errors"
 )
 

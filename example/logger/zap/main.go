@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/macheal/go-micro-plugins/logger/zap"
-	"github.com/micro/go-micro/v2/logger"
+	"github.com/macheal/go-micro/v2/logger"
 	"github.com/natefinch/lumberjack"
 	uzap "go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

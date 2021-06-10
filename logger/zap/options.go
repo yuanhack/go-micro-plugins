@@ -5,7 +5,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"io"
 
-	"github.com/micro/go-micro/v2/logger"
+	"github.com/macheal/go-micro/v2/logger"
 )
 
 type Options struct {
