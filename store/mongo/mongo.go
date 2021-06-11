@@ -3,7 +3,6 @@ package mongo
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strings"
 	"time"
 	"unicode"
@@ -98,7 +97,7 @@ func GetFilterPatternSwitch(prefix, substr, suffix string) bson.M {
 	}
 
 	if pattern {
-		fmt.Printf("Prefix: %v, Substr: %v, Suffix: %v, RegexPattern: %v\n", prefix, substr, suffix, pattStr)
+		//fmt.Printf("Prefix: %v, Substr: %v, Suffix: %v, RegexPattern: %v\n", prefix, substr, suffix, pattStr)
 		filter["key"] = primitive.Regex{Pattern: pattStr}
 	}
 
@@ -132,7 +131,7 @@ func GetFilterPatternSimpleSeries(prefix, substr, suffix string) bson.M {
 	}
 
 	if pattern {
-		fmt.Printf("Prefix: %v, Substr: %v, Suffix: %v, RegexPattern: %v\n", prefix, substr, suffix, pattStr)
+		//fmt.Printf("Prefix: %v, Substr: %v, Suffix: %v, RegexPattern: %v\n", prefix, substr, suffix, pattStr)
 		filter["key"] = primitive.Regex{Pattern: pattStr}
 	}
 
@@ -179,7 +178,7 @@ func GetFilterPatternExcludeContainSubstr(prefix, substr, suffix string) bson.M 
 	}
 
 	if pattern {
-		fmt.Printf("Prefix: %v, Substr: %v, Suffix: %v, RegexPattern: %v\n", prefix, substr, suffix, pattStr)
+		//fmt.Printf("Prefix: %v, Substr: %v, Suffix: %v, RegexPattern: %v\n", prefix, substr, suffix, pattStr)
 		filter["key"] = primitive.Regex{Pattern: pattStr}
 	}
 
