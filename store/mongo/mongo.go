@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 	"unicode"
@@ -58,6 +59,133 @@ func (s *MongoDBStore) Close() error {
 	return s.client.Disconnect(ctx)
 }
 
+func GetFilterPatternSwitch(prefix, substr, suffix string) bson.M {
+	var pattern bool
+	var pattStr string
+	filter := bson.M{}
+
+	switch {
+	case len(prefix) > 0 && len(substr) > 0 && len(suffix) > 0:
+		//  前缀   子串   后缀
+		pattern = true
+		pattStr = "^" + prefix + ".*" + substr + ".*" + suffix + "$"
+	case len(prefix) > 0 && len(substr) > 0:
+		//  前缀   子串
+		pattern = true
+		pattStr = "^" + prefix + ".*" + substr
+	case len(substr) > 0 && len(suffix) > 0:
+		//        子串   后缀
+		pattern = true
+		pattStr = substr + ".*" + suffix + "$"
+	case len(prefix) > 0 && len(suffix) > 0:
+		//  前缀         后缀
+		pattern = true
+		pattStr = "^" + prefix + ".*" + suffix + "$"
+	case len(prefix) > 0:
+		//  前缀
+		pattern = true
+		pattStr = "^" + prefix
+	case len(substr) > 0:
+		//          子串
+		//以下正则表达式: substr第一和最后一个字符不允许出现在字符串的开头和结尾, 严格匹配只能出现在中间
+		//pattStr = fmt.Sprintf("[^%c].*%v.*[%c]", substr[0], substr, substr[len(substr)-1])
+		pattern = true
+		pattStr = substr
+	case len(suffix) > 0:
+		//  后缀
+		pattern = true
+		pattStr = suffix + "$"
+	}
+
+	if pattern {
+		fmt.Printf("Prefix: %v, Substr: %v, Suffix: %v, RegexPattern: %v\n", prefix, substr, suffix, pattStr)
+		filter["key"] = primitive.Regex{Pattern: pattStr}
+	}
+
+	return filter
+}
+
+func GetFilterPatternSimpleSeries(prefix, substr, suffix string) bson.M {
+	var pattern bool
+	var pattStr string
+	filter := bson.M{}
+
+	if len(prefix) > 0 {
+		pattern = true
+		pattStr = "^" + prefix
+	}
+	if len(substr) > 0 {
+		pattern = true
+		if len(pattStr) > 0 {
+			pattStr += ".*" + substr
+		} else {
+			pattStr = substr
+		}
+	}
+	if len(suffix) > 0 {
+		pattern = true
+		if len(pattStr) > 0 {
+			pattStr += ".*" + suffix + "$"
+		} else {
+			pattStr = suffix + "$"
+		}
+	}
+
+	if pattern {
+		fmt.Printf("Prefix: %v, Substr: %v, Suffix: %v, RegexPattern: %v\n", prefix, substr, suffix, pattStr)
+		filter["key"] = primitive.Regex{Pattern: pattStr}
+	}
+
+	return filter
+}
+
+// 如果 substr 为 prefix 或 suffix 的一部分, 排除 substr
+func GetFilterPatternExcludeContainSubstr(prefix, substr, suffix string) bson.M {
+	var pattern bool
+	var pattStr string
+	filter := bson.M{}
+
+	if len(prefix) > 0 {
+		pattern = true
+		pattStr = "^" + prefix
+	}
+	if len(substr) > 0 {
+		pattern = true
+		if len(pattStr) > 0 {
+			// 忽略包含substr
+			if !strings.Contains(pattStr, substr) {
+				pattStr += ".*" + substr
+			}
+		} else {
+			pattStr = substr
+		}
+	}
+	if len(suffix) > 0 {
+		pattern = true
+		if len(pattStr) > 0 {
+			// 处理substr
+			if strings.HasSuffix(pattStr, suffix) {
+				pattStr += "$"
+			} else if len(substr) > 0 && strings.Contains(suffix, substr) {
+				pattStr = strings.TrimSuffix(pattStr, substr)
+				pattStr = strings.TrimSuffix(pattStr, ".*")
+				pattStr += ".*" + suffix + "$"
+			} else {
+				pattStr += ".*" + suffix + "$"
+			}
+		} else {
+			pattStr = suffix + "$"
+		}
+	}
+
+	if pattern {
+		fmt.Printf("Prefix: %v, Substr: %v, Suffix: %v, RegexPattern: %v\n", prefix, substr, suffix, pattStr)
+		filter["key"] = primitive.Regex{Pattern: pattStr}
+	}
+
+	return filter
+}
+
 // List all the known records
 func (s *MongoDBStore) List(opts ...store.ListOption) ([]string, error) {
 	var opt store.ListOptions
@@ -66,22 +194,17 @@ func (s *MongoDBStore) List(opts ...store.ListOption) ([]string, error) {
 	}
 
 	var records []string
-
 	filter := bson.M{}
-	if len(opt.Prefix) > 0 && len(opt.Suffix) > 0 {
-		filter["key"] = primitive.Regex{Pattern: "^" + opt.Prefix + ".*" + opt.Suffix + "$"}
-	} else if len(opt.Prefix) > 0 {
-		filter["key"] = primitive.Regex{Pattern: "^" + opt.Prefix}
-	} else if len(opt.Suffix) > 0 {
-		filter["key"] = primitive.Regex{Pattern: opt.Suffix + "$"}
-	}
-
 	//if len(opt.Prefix) > 0 {
 	//	filter["key"] = primitive.Regex{Pattern: "^" + opt.Prefix}
 	//}
 	//if len(opt.Suffix) > 0 {
 	//	filter["key"] = primitive.Regex{Pattern: opt.Suffix + "$"}
 	//}
+
+	substr := GetListSubstr(opt.Context)
+	//filter = GetFilterPatternSimpleSeries(opt.Prefix, substr, opt.Suffix)
+	filter = GetFilterPatternExcludeContainSubstr(opt.Prefix, substr, opt.Suffix)
 
 	cursor, err := s.collection.Find(
 		context.Background(),
