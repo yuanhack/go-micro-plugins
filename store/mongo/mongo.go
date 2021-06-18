@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 	"unicode"
@@ -18,6 +19,7 @@ import (
 )
 
 var (
+	_ = fmt.Print
 	// DefaultDatabase is the database that the sql store will use if no database is provided.
 	DefaultDatabase = "micro"
 	// DefaultTable is the table that the sql store will use if no table is provided.

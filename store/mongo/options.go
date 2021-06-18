@@ -28,6 +28,9 @@ func SetListSubstr(p string) store.ListOption {
 }
 
 func GetListSubstr(ctx context.Context) string {
+	if ctx == nil {
+		return ""
+	}
 	var s string
 	if v := ctx.Value("ListSubstr"); v != nil {
 		s = v.(string)
@@ -46,6 +49,9 @@ func SetReadSubstr(p string) store.ReadOption {
 }
 
 func GetReadSubstr(ctx context.Context) string {
+	if ctx == nil {
+		return ""
+	}
 	var s string
 	if v := ctx.Value("ReadSubstr"); v != nil {
 		s = v.(string)
